@@ -1,0 +1,14 @@
+query Courses {
+  courses {
+    title
+    slug
+    price
+    duration
+    description
+    documentId
+    image {
+      alternativeText
+      url
+    }
+  }
+}
