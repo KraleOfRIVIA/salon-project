@@ -28,6 +28,27 @@ input BooleanFilterInput {
   startsWith: Boolean
 }
 
+type ComponentInfoAbout {
+  content: JSON
+  id: ID!
+  image: UploadFile
+  title: String
+}
+
+type ComponentModelsTestimonials {
+  id: ID!
+  testimonials(filters: UploadFileFiltersInput, pagination: PaginationArg = {}, sort: [String] = []): [UploadFile]!
+  testimonials_connection(filters: UploadFileFiltersInput, pagination: PaginationArg = {}, sort: [String] = []): UploadFileRelationResponseCollection
+  title: String
+}
+
+type ComponentUnderHeaderHero {
+  backgroundImage: UploadFile
+  id: ID!
+  subtitle: String
+  title: String
+}
+
 type Course {
   createdAt: DateTime
   description: JSON
@@ -105,6 +126,11 @@ type DeleteMutationResponse {
   documentId: ID!
 }
 
+type Error {
+  code: String!
+  message: String
+}
+
 input FileInfoInput {
   alternativeText: String
   caption: String
@@ -136,7 +162,45 @@ input FloatFilterInput {
   startsWith: Float
 }
 
-union GenericMorph = Course | I18NLocale | ReviewWorkflowsWorkflow | ReviewWorkflowsWorkflowStage | UploadFile | UsersPermissionsPermission | UsersPermissionsRole | UsersPermissionsUser
+union GenericMorph = ComponentInfoAbout | ComponentModelsTestimonials | ComponentUnderHeaderHero | Course | HomePage | I18NLocale | ReviewWorkflowsWorkflow | ReviewWorkflowsWorkflowStage | UploadFile | UsersPermissionsPermission | UsersPermissionsRole | UsersPermissionsUser
+
+type HomePage {
+  createdAt: DateTime
+  documentId: ID!
+  publishedAt: DateTime
+  sections: [HomePageSectionsDynamicZone]
+  slug: String
+  title: String
+  updatedAt: DateTime
+}
+
+type HomePageEntityResponseCollection {
+  nodes: [HomePage!]!
+  pageInfo: Pagination!
+}
+
+input HomePageFiltersInput {
+  and: [HomePageFiltersInput]
+  createdAt: DateTimeFilterInput
+  documentId: IDFilterInput
+  not: HomePageFiltersInput
+  or: [HomePageFiltersInput]
+  publishedAt: DateTimeFilterInput
+  slug: StringFilterInput
+  title: StringFilterInput
+  updatedAt: DateTimeFilterInput
+}
+
+input HomePageInput {
+  publishedAt: DateTime
+  sections: [HomePageSectionsDynamicZoneInput!]
+  slug: String
+  title: String
+}
+
+union HomePageSectionsDynamicZone = ComponentInfoAbout | ComponentModelsTestimonials | ComponentUnderHeaderHero | Error
+
+scalar HomePageSectionsDynamicZoneInput
 
 type I18NLocale {
   code: String
@@ -248,6 +312,7 @@ type Mutation {
   """Change user password. Confirm with the current password."""
   changePassword(currentPassword: String!, password: String!, passwordConfirmation: String!): UsersPermissionsLoginPayload
   createCourse(data: CourseInput!, status: PublicationStatus = PUBLISHED): Course
+  createHomePage(data: HomePageInput!, status: PublicationStatus = PUBLISHED): HomePage
   createReviewWorkflowsWorkflow(data: ReviewWorkflowsWorkflowInput!, status: PublicationStatus = PUBLISHED): ReviewWorkflowsWorkflow
   createReviewWorkflowsWorkflowStage(data: ReviewWorkflowsWorkflowStageInput!, status: PublicationStatus = PUBLISHED): ReviewWorkflowsWorkflowStage
   """Create a new role"""
@@ -255,6 +320,7 @@ type Mutation {
   """Create a new user"""
   createUsersPermissionsUser(data: UsersPermissionsUserInput!): UsersPermissionsUserEntityResponse!
   deleteCourse(documentId: ID!): DeleteMutationResponse
+  deleteHomePage(documentId: ID!): DeleteMutationResponse
   deleteReviewWorkflowsWorkflow(documentId: ID!): DeleteMutationResponse
   deleteReviewWorkflowsWorkflowStage(documentId: ID!): DeleteMutationResponse
   deleteUploadFile(id: ID!): UploadFile
@@ -274,6 +340,7 @@ type Mutation {
   """
   resetPassword(code: String!, password: String!, passwordConfirmation: String!): UsersPermissionsLoginPayload
   updateCourse(data: CourseInput!, documentId: ID!, status: PublicationStatus = PUBLISHED): Course
+  updateHomePage(data: HomePageInput!, documentId: ID!, status: PublicationStatus = PUBLISHED): HomePage
   updateReviewWorkflowsWorkflow(data: ReviewWorkflowsWorkflowInput!, documentId: ID!, status: PublicationStatus = PUBLISHED): ReviewWorkflowsWorkflow
   updateReviewWorkflowsWorkflowStage(data: ReviewWorkflowsWorkflowStageInput!, documentId: ID!, status: PublicationStatus = PUBLISHED): ReviewWorkflowsWorkflowStage
   updateUploadFile(id: ID!, info: FileInfoInput): UploadFile!
@@ -306,6 +373,9 @@ type Query {
   course(documentId: ID!, status: PublicationStatus = PUBLISHED): Course
   courses(filters: CourseFiltersInput, pagination: PaginationArg = {}, sort: [String] = [], status: PublicationStatus = PUBLISHED): [Course]!
   courses_connection(filters: CourseFiltersInput, pagination: PaginationArg = {}, sort: [String] = [], status: PublicationStatus = PUBLISHED): CourseEntityResponseCollection
+  homePage(documentId: ID!, status: PublicationStatus = PUBLISHED): HomePage
+  homePages(filters: HomePageFiltersInput, pagination: PaginationArg = {}, sort: [String] = [], status: PublicationStatus = PUBLISHED): [HomePage]!
+  homePages_connection(filters: HomePageFiltersInput, pagination: PaginationArg = {}, sort: [String] = [], status: PublicationStatus = PUBLISHED): HomePageEntityResponseCollection
   i18NLocale(documentId: ID!, status: PublicationStatus = PUBLISHED): I18NLocale
   i18NLocales(filters: I18NLocaleFiltersInput, pagination: PaginationArg = {}, sort: [String] = [], status: PublicationStatus = PUBLISHED): [I18NLocale]!
   i18NLocales_connection(filters: I18NLocaleFiltersInput, pagination: PaginationArg = {}, sort: [String] = [], status: PublicationStatus = PUBLISHED): I18NLocaleEntityResponseCollection
@@ -479,6 +549,10 @@ input UploadFileFiltersInput {
   updatedAt: DateTimeFilterInput
   url: StringFilterInput
   width: IntFilterInput
+}
+
+type UploadFileRelationResponseCollection {
+  nodes: [UploadFile!]!
 }
 
 type UsersPermissionsCreateRolePayload {
