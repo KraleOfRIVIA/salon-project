@@ -1,44 +1,30 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { mockCourse } from '@/mocks/courses';
 
 interface CourseCardProps {
     documentId: string;
     title: string;
-    description: any; // потому что это массив rich text блоков
+    description: any;
     price: number;
     duration: number;
     slug: string;
     imageUrl?: string | null;
 }
 
-export default function CourseCard({
-    documentId,
-    title,
-    description,
-    price,
-    duration,
-    slug,
-    imageUrl,
-}: CourseCardProps) {
-    const router = useRouter();
-
+export default function CourseCard() {
     // 🧩 Достаём текст из первого параграфа (если это rich text)
-    const previewText = Array.isArray(description)
-        ? (description[0]?.children?.[0]?.text ?? '')
-        : description;
+    const previewText = Array.isArray(mockCourse.description)
+        ? (mockCourse.description[0]?.children?.[0]?.text ?? '')
+        : mockCourse.description;
 
     return (
-        <div
-            onClick={() => router.push(`/courses/${documentId}`)}
-            className="cursor-pointer bg-white shadow-md rounded-2xl p-6 hover:shadow-lg transition flex flex-col"
-        >
+        <div className="cursor-pointer bg-white shadow-md rounded-2xl p-6 hover:shadow-lg transition flex flex-col">
             <div className="w-full h-40 bg-gray-200 rounded-xl mb-4 flex items-center justify-center overflow-hidden">
-                {imageUrl ? (
+                {mockCourse.imageUrl ? (
                     <img
-                        src={`http://localhost:1337${imageUrl}`}
-
-                        alt={title}
+                        src={mockCourse.imageUrl}
+                        alt={mockCourse.title}
                         className="object-cover w-full h-full rounded-xl"
                     />
                 ) : (
@@ -46,15 +32,11 @@ export default function CourseCard({
                 )}
             </div>
 
-            <h3 className="text-xl font-semibold mb-2">{title}</h3>
+            <h3 className="text-xl font-semibold mb-2">{mockCourse.title}</h3>
 
             <p className="text-gray-600 mb-4 line-clamp-3">{previewText}</p>
 
             <button
-                onClick={(e) => {
-                    e.stopPropagation();
-                    router.push(`/courses/${documentId}`);
-                }}
                 className="mt-auto px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition"
             >
                 Подробнее
